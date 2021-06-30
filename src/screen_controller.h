@@ -1,23 +1,18 @@
-#ifndef screen_controller_library
-#define screen_controller_library
+#pragma once
 
-#include <Adafruit_SSD1306.h>
+#include <Battery_Controller.h>
 
-// #pragma once
-
-class Battery {
+#define isMargin false
+class ScreenController {
     public :
-        Battery(Adafruit_SSD1306* _d);
-        void show_battery();
-        void check_charging();
-
+        void init();
+        void splash_screen();
+        void welcome_screen();
+        static BatteryController batteryController;
+    protected:
+        static Adafruit_SSD1306 display;
     private :
-        static int charge;
-        static Adafruit_SSD1306* _display;
-        int get_charge();
-        void charging(bool _isCharging);
-        int get_percentage();
-        static bool isCharging;
+        void display_logo();
+        void setup_display();
 };
 
-#endif
