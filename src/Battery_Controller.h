@@ -15,6 +15,7 @@
 #define BATTERY_DIVIDER BATTERY_WIDTH
 #define MIN_VOLTAGE 74  // 74 --> 3.7/5 * 100 %
 #define MAX_VOLTAGE 84  // 84 --> 4.2/5 * 100 %
+#define ALERT_TRESHOLD 20
 #define BATTERY_PIN A0
 #define CHARGE_STATUS_PIN 2
 
@@ -28,6 +29,7 @@ class BatteryController {
         int get_percentage();
         void get_charge();
         void check_charging();
-        void low_battery_alert();
+        void low_charge_alert();
+        static bool alerted;
         static Adafruit_SSD1306* display;
 };

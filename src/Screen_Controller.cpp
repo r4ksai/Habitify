@@ -6,7 +6,7 @@
 #include <Battery_Controller.h>
 
 #define OLED_RESET    -1 // Reset pin # (or -1 if sharing Arduino reset pin)
-
+String name = "Sai";
 BatteryController ScreenController::batteryController ;
 Adafruit_SSD1306 ScreenController::display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
@@ -18,17 +18,6 @@ void ScreenController::init(){
   batteryController.init(&display);
 }
 
-void ScreenController::display_logo(){
-    
-  display.clearDisplay();
-
-  display.drawBitmap(
-    (display.width()  - LOGO_WIDTH ) / 2,
-    (display.height() - LOGO_HEIGHT) / 2,
-    logo_bmp, LOGO_WIDTH, LOGO_HEIGHT, 1);
-
-  display.display();
-}
 
 void ScreenController::setup_display(){
   if (isMargin)
@@ -37,13 +26,34 @@ void ScreenController::setup_display(){
 }
 
 void ScreenController::splash_screen(){
-    display.clearDisplay();
-    setup_display();
-    display.display();
+  display.clearDisplay();
+
+  display.drawBitmap(
+    (display.width()  - LOGO_WIDTH ) / 2,
+    (display.height() - LOGO_HEIGHT) / 2,
+    logo_bmp, LOGO_WIDTH, LOGO_HEIGHT, 1);
+
+  display.display();;
 }
 
 void ScreenController::welcome_screen(){
     display.clearDisplay();
-    setup_display();
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    display.setCursor(3,18);
+    display.cp437(true);
+    display.print(F("Welcome"));
+    display.setCursor(80,38);
+    display.print(name);
     display.display();
+}
+
+void ScreenController::home(){
+  display.clearDisplay();
+  setup_display();
+  display.display();
+}
+
+void ScreenController::alert(){
+
 }

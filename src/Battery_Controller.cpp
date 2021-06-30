@@ -7,10 +7,13 @@
 int BatteryController::charge ;
 bool BatteryController::isCharging ;
 Adafruit_SSD1306* BatteryController::display;
+bool BatteryController::alerted ;
+
 void BatteryController::init(Adafruit_SSD1306 *_display){
     display = _display;
     charge = 0;
     isCharging = false;
+    alerted = false;
     pinMode(CHARGE_STATUS_PIN,INPUT_PULLUP);
 }
 
@@ -33,6 +36,13 @@ void BatteryController::check_charging(){
     {   
         get_charge();
         isCharging = false;
+        if (charge < ALERT_TRESHOLD)
+        {
+            if (!alerted)
+                low_charge_alert();
+        }
+        else 
+            alerted = false;
     }
 }
 
@@ -47,6 +57,22 @@ int BatteryController::get_percentage(){
     return charge/(100/(BATTERY_WIDTH-1));
 }
 
-void BatteryController::low_battery_alert(){
-    
+
+void BatteryController::low_charge_alert(){
+    alerted = true;
+    while(digitalRead(3) && !(digitalRead(CHARGE_STATUS_PIN)))
+    {
+        display -> clearDisplay();
+        display -> drawRect(2,2,SCREEN_WIDTH-4,SCREEN_HEIGHT-4,WHITE);
+        display -> setTextSize(2);
+        display -> setTextColor(WHITE);
+        display -> setCursor(37,18);
+        display -> cp437(true);
+        display -> print(F("ALERT"));
+        display -> setCursor(32,38);
+        display -> setTextSize(1);
+        display -> print(F("BATTERY LOW"));
+        display -> display();
+    }
+    show_battery();
 }
