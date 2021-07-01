@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "hardwareserial.h": "c"
+        "hardwareserial.h": "c",
+        "battery_controller.h": "c"
     }
 }

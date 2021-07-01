@@ -21,7 +21,7 @@
 
 class BatteryController {
     public :
-        void init(Adafruit_SSD1306* _display);
+        void init(Adafruit_SSD1306* _display, bool *_atHome);
         void show_battery();
     private :
         static int charge;
@@ -30,6 +30,7 @@ class BatteryController {
         void get_charge();
         void check_charging();
         void low_charge_alert();
-        static bool alerted;
+        static bool wasAlerted;
         static Adafruit_SSD1306* display;
+        static bool* atHome;
 };

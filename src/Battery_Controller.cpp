@@ -7,14 +7,15 @@
 int BatteryController::charge ;
 bool BatteryController::isCharging ;
 Adafruit_SSD1306* BatteryController::display;
-bool BatteryController::alerted ;
+bool BatteryController::wasAlerted ;
+bool* BatteryController::atHome ;
 
-void BatteryController::init(Adafruit_SSD1306 *_display){
+void BatteryController::init(Adafruit_SSD1306 *_display, bool *_atHome){
     display = _display;
     charge = 0;
     isCharging = false;
-    alerted = false;
-    pinMode(CHARGE_STATUS_PIN,INPUT_PULLUP);
+    wasAlerted = false;
+    pinMode(CHARGE_STATUS_PIN,INPUT_PULLUP); // This pin is low when charging
 }
 
 void BatteryController::get_charge(){
@@ -24,10 +25,10 @@ void BatteryController::get_charge(){
 }
 
 void BatteryController::check_charging(){    
-    if (digitalRead(CHARGE_STATUS_PIN)) // Pin change interrupt
+    if (digitalRead(CHARGE_STATUS_PIN)) // TODO:- Add pin change interrupt for no lag charging detection
     {
         isCharging = true;
-        if (charge != 100)
+        if (charge != 100) // Charging animation 
             charge ++;
         else 
             charge = 0;
@@ -35,21 +36,23 @@ void BatteryController::check_charging(){
     else 
     {   
         get_charge();
+        if (isCharging) // check if the device got removed from charging
+            wasAlerted = false; // Activate alert if charging stoped 
         isCharging = false;
         if (charge < ALERT_TRESHOLD)
         {
-            if (!alerted)
+            if (!wasAlerted)
                 low_charge_alert();
         }
         else 
-            alerted = false;
+            wasAlerted = false; // Activate alert if battery is above the treshold
     }
 }
 
 void BatteryController::show_battery(){
     display -> drawRect(BATTERY_X,BATTERY_Y,BATTERY_WIDTH,BATTERY_HEIGHT,WHITE);
     display -> drawRect(BATTERY_KNOB_X,BATTERY_KNOB_Y,BATTERY_KNOB_WIDTH,BATTERY_KNOB_HEIGHT,WHITE);
-    display -> drawRect(BATTERY_CHARGE_X,BATTERY_CHARGE_Y,get_percentage(),2,WHITE);
+    display -> drawRect(BATTERY_CHARGE_X,BATTERY_CHARGE_Y,get_percentage(),2,WHITE); // Draw the charge percentage
 }
 
 int BatteryController::get_percentage(){
@@ -59,8 +62,8 @@ int BatteryController::get_percentage(){
 
 
 void BatteryController::low_charge_alert(){
-    alerted = true;
-    while(digitalRead(3) && !(digitalRead(CHARGE_STATUS_PIN)))
+    *atHome = false; // Screen Controller variable that tracks if the user is at home screen
+    while(digitalRead(RIGHT) && !(digitalRead(CHARGE_STATUS_PIN))) // Show alert till plugged for charge or pressed ok
     {
         display -> clearDisplay();
         display -> drawRect(2,2,SCREEN_WIDTH-4,SCREEN_HEIGHT-4,WHITE);
@@ -74,5 +77,6 @@ void BatteryController::low_charge_alert(){
         display -> print(F("BATTERY LOW"));
         display -> display();
     }
+    wasAlerted = true;
     show_battery();
 }
