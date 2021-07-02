@@ -25,7 +25,7 @@ void BatteryController::get_charge(){
 }
 
 void BatteryController::check_charging(){    
-    if (digitalRead(CHARGE_STATUS_PIN)) // TODO:- Add pin change interrupt for no lag charging detection
+    if (!digitalRead(CHARGE_STATUS_PIN)) // TODO:- Add pin change interrupt for no lag charging detection
     {
         isCharging = true;
         if (charge != 100) // Charging animation 
@@ -42,7 +42,9 @@ void BatteryController::check_charging(){
         if (charge < ALERT_TRESHOLD)
         {
             if (!wasAlerted)
+            {
                 low_charge_alert();
+            }
         }
         else 
             wasAlerted = false; // Activate alert if battery is above the treshold
@@ -63,7 +65,7 @@ int BatteryController::get_percentage(){
 
 void BatteryController::low_charge_alert(){
     *atHome = false; // Screen Controller variable that tracks if the user is at home screen
-    while(digitalRead(RIGHT) && !(digitalRead(CHARGE_STATUS_PIN))) // Show alert till plugged for charge or pressed ok
+    while(digitalRead(RIGHT) && digitalRead(LEFT) && (digitalRead(CHARGE_STATUS_PIN))) // Show alert till plugged for charge or pressed ok
     {
         display -> clearDisplay();
         display -> drawRect(2,2,SCREEN_WIDTH-4,SCREEN_HEIGHT-4,WHITE);

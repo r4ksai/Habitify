@@ -6,7 +6,7 @@
 #include <Battery_Controller.h>
 
 #define OLED_RESET    -1 // Reset pin # (or -1 if sharing Arduino reset pin)
-
+#define ICON1_POSITION SCREEN_WIDTH/2
 
 String username = "Sai";
 bool ScreenController::atHome;
@@ -43,7 +43,7 @@ void ScreenController::splash_screen(){
     (display.height() - LOGO_HEIGHT) / 2,
     logo_bmp, LOGO_WIDTH, LOGO_HEIGHT, 1);
 
-  display.display();;
+  display.display();
 }
 
 void ScreenController::welcome_screen(){
@@ -103,22 +103,49 @@ void ScreenController::home(){
   display.display();
 }
 
-void ScreenController::scroll_animation(){
+void ScreenController::scroll_animation(bool toLeft){
   // TODO :- Scroll the current icon to the left and scroll the new icon to the left till center and take out the arrows and add the battery
+  int dir = toLeft ? 1 : -1;
+  int next_position = toLeft ? SCREEN_WIDTH + SCREEN_WIDTH/2 : -SCREEN_WIDTH/2;
+  for (int scroll = 0 ; scroll <= 128; scroll += 8) // 128 = Screen Width
+  {
+    display.clearDisplay();
+
+    display.drawCircle(ICON1_POSITION - scroll * dir,SCREEN_HEIGHT/2,25,WHITE);
+    display.drawBitmap(
+    ((display.width()  - ICON_WIDTH ) / 2) - scroll * dir,
+    (display.height() - ICON_HEIGHT) / 2,
+    get_bit_array(currentIcon), ICON_WIDTH, ICON_HEIGHT, 1);;
+
+
+    display.drawCircle(next_position - scroll * dir,SCREEN_HEIGHT/2,25,WHITE);
+    display.drawBitmap(
+    ((display.width()  - ICON_WIDTH ) / 2) - scroll * dir + SCREEN_WIDTH * dir ,
+    (display.height() - ICON_HEIGHT) / 2,
+    get_bit_array(currentIcon+dir), ICON_WIDTH, ICON_HEIGHT, 1);;
+
+    display.display(); 
+  }
 }
+
 
 void ScreenController::check_input(){ // TODO :- Polling right now, add interrupts
   if (atHome)
   {
     if (!digitalRead(LEFT)){
-      scroll_animation();
+      
       if (currentIcon < MAX_ICONS - 1)
+      {
+        scroll_animation(true);
         currentIcon++;
+      }
     }
     if (!digitalRead(RIGHT)){
-      scroll_animation();
       if (currentIcon > 0)
+      {
+        scroll_animation(false);
         currentIcon--;
+      }
     }
   }
 }
@@ -136,7 +163,7 @@ void ScreenController::alert(){
   4.If all the tasks are done then a new icon will be unlocked in the home 
   5.Once a task is done it will skip to the next task
   6.Add Sound 
-  7.Add Animation
+  7.Add Animation -- DONE 
   8.PCB Design
 
 */

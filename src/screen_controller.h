@@ -20,7 +20,7 @@ class ScreenController {
         void setup_display();
         void icons(int id);
         void show_arrows(int id);
-        void scroll_animation();
+        void scroll_animation(bool toLeft);
         void alert();
         const unsigned char* get_bit_array(int id);
 };
