@@ -21,6 +21,5 @@ void setup() {
 void loop(){
   screenController.home();
   screenController.check_input();
-  // Serial.println("done");
 }
 

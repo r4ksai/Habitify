@@ -41,7 +41,7 @@ static const unsigned char PROGMEM logo_bmp[] =
 	Resize images using 	:- https://www.reduceimages.com/
 	Create Icons using 	:- https://www.pixilart.com/draw
 	Convert to bitmap using 	:- https://diyusthad.com/image2cpp
-	
+	Add multiple bitmaps	
 */
 
 static const unsigned char PROGMEM sunrise_bmp[] =

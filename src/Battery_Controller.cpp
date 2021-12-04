@@ -24,7 +24,7 @@ void BatteryController::get_charge(){
     charge = constrain(map(_charge,MIN_VOLTAGE,MAX_VOLTAGE,0,100),0,100); // Convert the voltage reading between 3.7 to 4.2 --> 0% to 100%
 }
 
-void BatteryController::check_charging(){    
+bool BatteryController::check_charging(){    
     if (!digitalRead(CHARGE_STATUS_PIN)) // TODO:- Add pin change interrupt for no lag charging detection
     {
         isCharging = true;
@@ -58,7 +58,7 @@ void BatteryController::show_battery(){
 }
 
 int BatteryController::get_percentage(){
-    check_charging();
+    return check_charging(); 
     return charge/(100/(BATTERY_WIDTH-1));
 }
 
